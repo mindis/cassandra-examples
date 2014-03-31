@@ -20,6 +20,7 @@ If you already have access to a Cassandra cluster, you should be able to start r
 
 ```bash
    $ export BACKEND_STORAGE_IP='mycluster_ip'
+```
 
 However, if you don't have access to a Cassandra cluster, you can get started by installing [Ferry](http://ferry.opencore.io). Ferry is an open-source tool that helps developers provision virtual clusters on a local machine. Ferry supports Cassandra (and other "big data" tools) and doesn't require that you actually know how to configure Cassandra to get started. 
 
@@ -27,31 +28,37 @@ Assuming that you are using Ferry, you should run all these commands in a Cassan
 
 ```bash
    $ pip install -r requirements.txt
+```
 
 Afterwards, you'll want to set up the Cassandra keyspace and table for our application.
 
 ```bash
    $ cqlsh -f createtable.cql
+```
 
 After creating the table, you should be able to start the web server by typing:
 
 ```bash
    $ python rest.py &
+```
 
 Afterwards, insert some data into Cassandra by typing:
 
 ```bash
    $ python client.py post 
+```
 
 Finally, let's see what data got inserted.
 
 ```bash
    $ python client.py fetch  
+```
 
 You can filter the results as well. Try:
 
 ```bash
    $ python client.py fetch FA-1 sensor-0 2
+```
 
 Schema layout
 -------------
@@ -67,6 +74,7 @@ CREATE TABLE sensor_data (
   reading float, 
   PRIMARY KEY(sensor_id, time)
 )
+```
 
 The sensor values are stored as ``float`` and has an associated timestamp (``timeuuid`` is a timestamp combined with a UUID). Since we'll want to view the sensor data sorted by time, we'll need to use a "compound key" consisting of the sensor ID and timestamp. Basically we're telling Cassandra to first store all the data from a single sensor together on a single node, and then to store the values sorted by time. 
 
@@ -83,6 +91,7 @@ values = { 'sensor_id':sensor_id,
            'time': time_uuid.TimeUUID(time]),
            'reading': float(reading) }
 session.execute(query, values)
+```
 
 This should look pretty familiar to most SQL programmers. Fetching data from a Cassandra cluster is similiar and consists of creating a `SELECT` query. 
 
@@ -96,6 +105,7 @@ values = {'value': json.dumps( { 'sensor':str(sensor_id),
                                  'time': str(ts),
                                  'reading': sensor_value} ) }
 requests.post(REST_SERVER + '/api/sensors', data=values)
+```
 
 Similarly, in order to fetch data from the REST server, it executes an HTTP `get` with some parameters to filter the results. 
 
@@ -103,4 +113,4 @@ Similarly, in order to fetch data from the REST server, it executes an HTTP `get
 values = { 'sensor' : sensor, 
            'days'   : days }
 res = requests.get(REST_SERVER + '/api/sensors', params=values)
-
+```

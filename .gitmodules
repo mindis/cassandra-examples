@@ -1,3 +1,6 @@
 [submodule "twissandra"]
 	path = twissandra
 	url = https://github.com/opencore/twissandra.git
+[submodule "kairosdb"]
+	path = kairosdb
+	url = https://github.com/opencore/kairosdb.git
